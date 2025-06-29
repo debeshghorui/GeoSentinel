@@ -40,7 +40,7 @@ const aoiData = [
     status: 'active',
     lastUpdate: '2 hours ago',
     changeDetected: true,
-    coordinates: [-3.4653, -62.2159],
+    coordinates: [-3.4653, -62.2159] as [number, number],
   },
   {
     id: 'AOI-002',
@@ -49,7 +49,7 @@ const aoiData = [
     status: 'active',
     lastUpdate: '6 hours ago',
     changeDetected: false,
-    coordinates: [-0.3355, 33.8711],
+    coordinates: [-0.3355, 33.8711] as [number, number],
   },
   {
     id: 'AOI-003',
@@ -58,7 +58,7 @@ const aoiData = [
     status: 'processing',
     lastUpdate: '1 day ago',
     changeDetected: true,
-    coordinates: [19.0760, 72.8777],
+    coordinates: [19.0760, 72.8777] as [number, number],
   },
 ];
 

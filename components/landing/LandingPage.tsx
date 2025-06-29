@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Satellite, Shield, TrendingUp, Zap, Eye, Globe, ArrowRight, CheckCircle, Mail, MapPin, Phone, Github, Twitter, Linkedin } from 'lucide-react';
+import { Satellite, Shield, TrendingUp, Zap, Eye, Globe, ArrowRight, CheckCircle, Mail, MapPin, Phone, Github, Twitter, Linkedin, LogOut } from 'lucide-react';
 import AuthDialog from './AuthDialog';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 
 const features = [
   {
@@ -85,16 +86,37 @@ const footerLinks = {
 export default function LandingPage() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  const { user, loading, signOut } = useAuth();
   const router = useRouter();
 
-  const handleDemoLogin = () => {
-    router.push('/dashboard');
+  // Redirect to dashboard if user is already logged in
+  useEffect(() => {
+    if (user && !loading) {
+      router.push('/dashboard');
+    }
+  }, [user, loading, router]);
+
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   const openAuth = (mode: 'login' | 'signup') => {
     setAuthMode(mode);
     setAuthOpen(true);
   };
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -117,12 +139,29 @@ export default function LandingPage() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center space-x-6"
           >
-            <Button variant="ghost" onClick={() => openAuth('login')}>
-              Login
-            </Button>
-            <Button onClick={() => openAuth('signup')}>
-              Get Started
-            </Button>
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-muted-foreground">
+                  Welcome, {user.user_metadata?.full_name || user.email}
+                </span>
+                <Button variant="ghost" onClick={handleSignOut}>
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Sign Out
+                </Button>
+                <Button onClick={() => router.push('/dashboard')}>
+                  Dashboard
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button variant="ghost" onClick={() => openAuth('login')}>
+                  Login
+                </Button>
+                <Button onClick={() => openAuth('signup')}>
+                  Get Started
+                </Button>
+              </>
+            )}
           </motion.div>
         </div>
       </header>
@@ -159,13 +198,22 @@ export default function LandingPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
-              <Button size="lg" onClick={handleDemoLogin} className="text-lg px-8 py-6">
-                Try Demo Dashboard
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-              <Button size="lg" variant="outline" onClick={() => openAuth('signup')} className="text-lg px-8 py-6">
-                Start Free Trial
-              </Button>
+              {user ? (
+                <Button size="lg" onClick={() => router.push('/dashboard')} className="text-lg px-8 py-6">
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              ) : (
+                <>
+                  <Button size="lg" onClick={() => openAuth('signup')} className="text-lg px-8 py-6">
+                    Start Free Trial
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                  <Button size="lg" variant="outline" onClick={() => openAuth('login')} className="text-lg px-8 py-6">
+                    Sign In
+                  </Button>
+                </>
+              )}
             </motion.div>
           </div>
         </div>
@@ -263,11 +311,7 @@ export default function LandingPage() {
               Join the organizations already using GeoSentinel to protect and monitor their critical areas.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" onClick={handleDemoLogin} className="text-lg px-8 py-6">
-                Explore Demo
-                <ArrowRight className="ml-2 w-5 h-5" />
-              </Button>
-              <Button size="lg" variant="outline" onClick={() => openAuth('signup')} className="text-lg px-8 py-6">
+              <Button size="lg" onClick={() => openAuth('signup')} className="text-lg px-8 py-6">
                 Contact Sales
               </Button>
             </div>
@@ -421,7 +465,6 @@ export default function LandingPage() {
         open={authOpen} 
         onOpenChange={setAuthOpen} 
         mode={authMode}
-        onDemoLogin={handleDemoLogin}
       />
     </div>
   );

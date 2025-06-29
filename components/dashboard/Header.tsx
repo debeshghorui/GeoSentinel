@@ -36,6 +36,18 @@ export default function Header() {
     router.push('/');
   };
 
+  const handleProfileClick = () => {
+    router.push('/dashboard/profile');
+  };
+
+  const handleSettingsClick = () => {
+    router.push('/dashboard/settings');
+  };
+
+  const handleHelpClick = () => {
+    router.push('/dashboard/help');
+  };
+
   return (
     <header className="bg-card/50 backdrop-blur-xl border-b border-border/40 sticky top-0 z-30">
       <div className="flex items-center justify-between px-6 py-4">
@@ -141,15 +153,15 @@ export default function Header() {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleProfileClick}>
                 <User className="mr-2 h-4 w-4" />
                 Profile
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleSettingsClick}>
                 <Settings className="mr-2 h-4 w-4" />
                 Settings
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleHelpClick}>
                 <HelpCircle className="mr-2 h-4 w-4" />
                 Help & Support
               </DropdownMenuItem>
